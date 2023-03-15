@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fieldReference"] // this is required in order to compare two columns in the same table
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  homeGames Event[] @relation("homeGames")
+  awayGames Event[] @relation("awayGames")
+  wins Outcome[] @relation("wins")
+  losses Outcome[] @relation("losses")
+  ownerTeamHistory OwnerTeamHistory[]
+  predictions Prediction[]
+}
+
+model Owner {
+  id         Int       @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  ownerTeamHistory OwnerTeamHistory[]   
+  predictions Prediction[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OwnerTeamHistory {
+  id Int @id @default(autoincrement())
+  owner Owner @relation(fields: [ownerId], references: [id])
+  ownerId Int
+  team Team @relation(fields: [teamId], references: [id])
+  teamId Int
+  startDate DateTime @default(now())
+  endDate DateTime?
+}
+
+model Event {
+  id Int @id @default(autoincrement()) // this is temporary, eventually game IDS come from NHL API
+  date DateTime
+  homeTeam Team @relation("homeGames", fields: [homeTeamId], references: [id])
+  homeTeamId Int
+  awayTeam Team @relation("awayGames", fields: [awayTeamId], references: [id])
+  awayTeamId Int
+  outcome Outcome?
+  predictions Prediction[]
+}
+
+model Outcome {
+  id Int @id @default(autoincrement())
+  event Event @relation(fields: [eventId], references: [id])
+  eventId Int @unique
+  winningTeam Team @relation("wins", fields: [winningTeamId], references: [id])
+  winningTeamId Int
+  losingTeam Team @relation("losses", fields: [losingTeamId], references: [id])
+  losingTeamId Int
+  winningTeamScore Int
+  losingTeamScore Int
+  overtime Boolean @default(false)
+}
+
+model Prediction {
+  id Int @id @default(autoincrement())
+  ownerId Int
+  owner Owner @relation(fields: [ownerId], references: [id])
+  teamId Int
+  team Team @relation(fields: [teamId], references: [id])
+  eventId Int
+  event Event @relation(fields: [eventId], references: [id])
+  winPrediction Boolean
+  winOutcome Boolean
+}

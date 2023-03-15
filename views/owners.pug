@@ -1,0 +1,13 @@
+extends layout.pug 
+block content
+  if owners
+    ul
+    each owner in owners
+      li= owner.name
+        if owner.teams
+         ul
+          each team in owner.teams
+            li= team.name
+        else
+          p no teams
+    
