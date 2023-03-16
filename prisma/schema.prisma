@@ -16,8 +16,6 @@ model Team {
   name String @db.VarChar(255)
   homeGames Event[] @relation("homeGames")
   awayGames Event[] @relation("awayGames")
-  wins Outcome[] @relation("wins")
-  losses Outcome[] @relation("losses")
   ownerTeamHistory OwnerTeamHistory[]
   predictions Prediction[]
 }
@@ -43,26 +41,23 @@ model OwnerTeamHistory {
 
 model Event {
   id Int @id @default(autoincrement()) // this is temporary, eventually game IDS come from NHL API
-  date DateTime
+  scheduledDate DateTime
+  eventStateId Int
+  state EventState @relation(fields: [eventStateId], references: [id])
   homeTeam Team @relation("homeGames", fields: [homeTeamId], references: [id])
   homeTeamId Int
+  homeTeamScore Int?
   awayTeam Team @relation("awayGames", fields: [awayTeamId], references: [id])
   awayTeamId Int
-  outcome Outcome?
+  awayTeamScore Int?
+  overtime Boolean? @default(false)
   predictions Prediction[]
 }
 
-model Outcome {
+model EventState {
   id Int @id @default(autoincrement())
-  event Event @relation(fields: [eventId], references: [id])
-  eventId Int @unique
-  winningTeam Team @relation("wins", fields: [winningTeamId], references: [id])
-  winningTeamId Int
-  losingTeam Team @relation("losses", fields: [losingTeamId], references: [id])
-  losingTeamId Int
-  winningTeamScore Int
-  losingTeamScore Int
-  overtime Boolean @default(false)
+  name String @db.VarChar(255)
+  events Event[]
 }
 
 model Prediction {
@@ -74,5 +69,5 @@ model Prediction {
   eventId Int
   event Event @relation(fields: [eventId], references: [id])
   winPrediction Boolean
-  winOutcome Boolean
+  winOutcome Boolean?
 }
