@@ -11,6 +11,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id String @id @default(uuid())
+  username String @unique
+  password String @db.VarChar(255)
+  owner Owner?
+}
+
+model Owner {
+  id         Int       @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  teamName String? @db.VarChar(255)
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+  ownerTeamHistory OwnerTeamHistory[]   
+  predictions Prediction[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Team {
   id Int @id @default(autoincrement())
   name String @db.VarChar(255)
@@ -18,15 +37,6 @@ model Team {
   awayGames Event[] @relation("awayGames")
   ownerTeamHistory OwnerTeamHistory[]
   predictions Prediction[]
-}
-
-model Owner {
-  id         Int       @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  ownerTeamHistory OwnerTeamHistory[]   
-  predictions Prediction[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model OwnerTeamHistory {
@@ -37,6 +47,7 @@ model OwnerTeamHistory {
   teamId Int
   startDate DateTime @default(now())
   endDate DateTime?
+  accumulatedPoints Int? 
 }
 
 model Event {
