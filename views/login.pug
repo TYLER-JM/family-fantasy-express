@@ -1,6 +1,10 @@
 extends layout.pug 
 block content
-  h2 Please
+  h2 Please Login
+  if !usernameSuccess
+    p.warning user not found!
+  if !passwordSuccess
+    p.warning incorrect password
   form(action="login", method="POST") 
     label(for="username") Username 
       input#username(type="text", name="username")

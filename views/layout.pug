@@ -7,6 +7,9 @@ html(lang="en")
     title Family Fantasy
     link(rel="stylesheet", href="../styles/base.css")
   body 
-    h1 Welcome to the page!
+    h1 Welcome to the page
+      = username ? `, ${username}!` : '!'
+    if username
+      include  partials/navbar.pug
     block content
     div.footer copyright © 2023

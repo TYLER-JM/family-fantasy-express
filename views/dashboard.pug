@@ -1,4 +1,12 @@
 extends layout.pug 
 block content
-  div You are now at your dashboard 
-  a(href="/standings") Go to standings
+  h2 Upcoming Games
+  a(href="/predictions/2023-02-03") Make Prediction!
+  if games
+    ul  
+      each game in games
+        li=game.awayTeam.name + ' @ ' + game.homeTeam.name 
+  else 
+    p no upcoming games 
+
+  
