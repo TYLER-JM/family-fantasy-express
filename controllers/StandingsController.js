@@ -1,5 +1,11 @@
 export default {
   get(req, res) {
-    res.render('standings')
+    let templateVars = {
+      username: req.session.username
+    }
+    if (!templateVars.username) {
+      res.redirect('/login')
+    }
+    res.render('standings', templateVars)
   },
 }
