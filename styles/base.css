@@ -8,3 +8,8 @@ h1 {
   font-size: 0.75rem;
   color: gray;
 }
+
+.warning {
+  color: red;
+  border: 2px solid red;
+}
