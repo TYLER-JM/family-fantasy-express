@@ -31,8 +31,9 @@ model Owner {
 }
 
 model Team {
-  id Int @id @default(autoincrement())
+  id Int @id // team IDs must come from NHL API
   name String @db.VarChar(255)
+  abbreviation String @db.VarChar(255)
   homeGames Event[] @relation("homeGames")
   awayGames Event[] @relation("awayGames")
   ownerTeamHistory OwnerTeamHistory[]
@@ -51,7 +52,8 @@ model OwnerTeamHistory {
 }
 
 model Event {
-  id Int @id @default(autoincrement()) // this is temporary, eventually game IDS come from NHL API
+  id Int @id // event Ids must come from NHL API: gamePK
+  season String @db.VarChar(255)
   scheduledDate DateTime
   eventStateId Int
   state EventState @relation(fields: [eventStateId], references: [id])
@@ -66,7 +68,7 @@ model Event {
 }
 
 model EventState {
-  id Int @id @default(autoincrement())
+  id Int @id
   name String @db.VarChar(255)
   events Event[]
 }
