@@ -4,10 +4,10 @@ import cookieParser from 'cookie-parser'
 import cookieSession from 'cookie-session'
 
 import path from 'path'
-import DashboardController from './controllers/DashboardController.js'
-import StandingsController from './controllers/StandingsController.js'
-import PredictionsControllers from './controllers/PredictionsControllers.js'
-import AuthController from './controllers/AuthController.js'
+import DashboardController from '../controllers/DashboardController.js'
+import StandingsController from '../controllers/StandingsController.js'
+import PredictionsControllers from '../controllers/PredictionsControllers.js'
+import AuthController from '../controllers/AuthController.js'
 
 const PORT = 3000
 const app = express()
@@ -30,7 +30,7 @@ app.post('/logout', AuthController.logout)
 
 app.get('/standings', StandingsController.get)
 
-app.get('/predictions/:date', PredictionsControllers.get)
+app.get('/predictions/create', PredictionsControllers.get)
 
 app.listen(PORT, () => {
   console.log(`app listening on port: ${PORT}`);
