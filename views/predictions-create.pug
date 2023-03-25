@@ -1,4 +1,12 @@
 extends layout.pug 
 block content
   h2 Predictions Page
-  p Here you can make predictions for the games on this date: #{date} 
+  if games
+    h3=gameDate.toDateString()
+    form(action=`/predictions/create`, method="post")
+      each game in games
+        label(for=`games[${game.id}]`)=game.awayTeam.name + ' @ ' + game.homeTeam.name 
+          input(type="checkbox", name=`games[${game.id}]`)
+      button(type="submit") Make Predictions!
+  else 
+    p no upcoming games 
