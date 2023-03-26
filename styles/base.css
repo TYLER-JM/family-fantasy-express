@@ -13,3 +13,7 @@ h1 {
   color: red;
   border: 2px solid red;
 }
+
+select {
+  margin: 0.5em 0em;
+}

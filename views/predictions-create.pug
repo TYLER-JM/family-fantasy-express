@@ -1,12 +1,19 @@
 extends layout.pug 
 block content
-  h2 Predictions Page
+  h2.is-center Predictions Page
   if games
-    h3=gameDate.toDateString()
-    form(action=`/predictions/create`, method="post")
-      each game in games
-        label(for=`games[${game.id}]`)=game.awayTeam.name + ' @ ' + game.homeTeam.name 
-          input(type="checkbox", name=`games[${game.id}]`)
-      button(type="submit") Make Predictions!
+    div
+      h3.is-center Upcoming Games:
+      div.is-horizontal-align 
+        form(action=`/predictions/create`, method="post")
+          each game in games
+            label(for=`${game.id}`)
+              =`${game.awayTeam.name} @ ${game.homeTeam.name} ` 
+              span.tag.is-small=game.date.toDateString()
+              select(name=`${game.id}`)
+                option(value="") no predictions
+                option(value=`${game.ownedTeam.id}-win`)=game.ownedTeam.name + ' to win' 
+                option(value=`${game.ownedTeam.id}-lose`)=game.ownedTeam.name + ' to lose' 
+          button.is-full-width(type="submit") Make Predictions!
   else 
     p no upcoming games 
