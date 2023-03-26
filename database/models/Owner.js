@@ -6,9 +6,9 @@ const Owner = {
     //dynamically get start and ends of a date
     // I just accept a date as second parameter so dates further in the future can be got
     let startOfDay = new Date()
-    startOfDay.setUTCHours(0,0,0,0)
+    startOfDay.setHours(0,0,0,0)
     let endOfDay = new Date(startOfDay.getTime())
-    endOfDay.setUTCHours(23,59,59,999)
+    endOfDay.setHours(23,59,59,999)
     console.log("DAY start/end: ", startOfDay, endOfDay)
     let histories = await prisma.ownerTeamHistory.findMany({
       where: {ownerId: ownerId, endDate: null},
@@ -56,6 +56,25 @@ const Owner = {
       }
     }).filter(game => game)
     return allGames
+  },
+
+  async createPreditions(ownerId, games) {
+    let data = Object.entries(games).filter(([,value]) => value).map(([eventId, value]) => {
+      let [teamId, outcome] = value.split('-')
+        return {
+            ownerId,
+            teamId: Number(teamId),
+            eventId: Number(eventId),
+            winPrediction: outcome === 'win',
+        }
+    })
+    try {
+      return await prisma.prediction.createMany({
+        data
+      })
+    } catch (error) {
+      console.log('ERROR saving predictions: ', error)
+    } 
   }
 }
 
