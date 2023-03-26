@@ -1,5 +1,7 @@
 extends layout.pug 
 block content
   h2 This is your dashboard
+  if flashMessage
+    p.tag=flashMessage
 
   
