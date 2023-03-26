@@ -7,6 +7,8 @@
 
 - `$ npx prisma generate` -- needs to be manually invoked after changes to the schema, in order for Prisma Client to be updated to accomodate the new schema
 
+- `$ node server/cron.js` -- should be run daily to keep the database up to date while the season is ongoing. This is the command that will eventually be run automoatically.
+
 ----
 
 - `$ npx prisma studio` -- spin up a GUI to view and interact with your data. This opens in your browser.
