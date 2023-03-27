@@ -34,9 +34,10 @@ const Owner = {
       }
     })
 
-    let allGames = histories.map(history => {
+    let allGames = histories.reduce((all, history) => {
+      let game = {}
       if (history.team.homeGames.length) {
-        return {
+        game = {
           homeTeam: history.team.homeGames[0].homeTeam,
           ownedTeam: history.team.homeGames[0].homeTeam,
           awayTeam: history.team.homeGames[0].awayTeam,
@@ -44,7 +45,7 @@ const Owner = {
           date: history.team.homeGames[0].scheduledDate
         }
       } else if (history.team.awayGames.length) {
-        return {
+        game = {
           homeTeam: history.team.awayGames[0].homeTeam,
           ownedTeam: history.team.awayGames[0].awayTeam,
           awayTeam: history.team.awayGames[0].awayTeam,
@@ -52,9 +53,10 @@ const Owner = {
           date: history.team.awayGames[0].scheduledDate
         }
       } else {
-        return false
+        return [...all]
       }
-    }).filter(game => game)
+      return [...all, game]
+    }, [])
     return allGames
   },
 
