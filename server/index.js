@@ -31,6 +31,7 @@ app.post('/logout', AuthController.logout)
 app.get('/standings', StandingsController.get)
 
 app.get('/predictions/create', PredictionsControllers.get)
+app.post('/predictions/create', PredictionsControllers.post)
 
 app.listen(PORT, () => {
   console.log(`app listening on port: ${PORT}`);
