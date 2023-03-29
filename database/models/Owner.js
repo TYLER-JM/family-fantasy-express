@@ -9,7 +9,6 @@ const Owner = {
     startOfDay.setHours(0,0,0,0)
     let endOfDay = new Date(startOfDay.getTime())
     endOfDay.setHours(23,59,59,999)
-    console.log("DAY start/end: ", startOfDay, endOfDay)
     let histories = await prisma.ownerTeamHistory.findMany({
       where: {ownerId: ownerId, endDate: null},
       include: {
@@ -17,24 +16,79 @@ const Owner = {
           include: {
             homeGames: {
               where: {
-                scheduledDate: {gte: startOfDay, lte: endOfDay}
+                scheduledDate: {gte: startOfDay, lte: endOfDay},
               },
               orderBy: {scheduledDate: 'asc'},
-              include: {awayTeam: true, homeTeam: true}
+              include: {awayTeam: true}
             },
             awayGames: {
               where: {
                 scheduledDate: {gte: startOfDay, lte: endOfDay}
               },
               orderBy: {scheduledDate: 'asc'},
-              include: {homeTeam: true, awayTeam: true}
+              include: {homeTeam: true}
             }
           }
         }
       }
     })
+    /**
+     * get Predictions,
+     * so we can indicate to the user that the game is still upcoming,
+     * but they've already placed a bet
+     */
 
     let allGames = histories.reduce((all, history) => {
+      let game = {}
+      if (history.team.homeGames.length) {
+        let gameId = history.team.homeGames[0].id
+        if (all.hasOwnProperty(gameId)) {
+          let options = {
+            ...all[gameId].options,
+            [history.team.id + '-win']: `${history.team.name} to win`,
+            [history.team.id + '-lose']: `${history.team.name} to lose`
+          }
+          return {...all, [gameId]: {...all[gameId], options}}
+        }
+        game = {
+          options: {
+            [history.team.id + '-win']: `${history.team.name} to win`, 
+            [history.team.id + '-lose']: `${history.team.name} to lose` 
+          },
+          homeTeam: history.team.name,
+          awayTeam: history.team.homeGames[0].awayTeam.name,
+          date: history.team.homeGames[0].scheduledDate
+        }
+        return {...all, [gameId]: game}
+      } else if (history.team.awayGames.length) {
+        let gameId = history.team.awayGames[0].id
+        if (all.hasOwnProperty(gameId)) {
+          let options = {
+            ...all[gameId].options,
+            [history.team.id + '-win']: `${history.team.name} to win`,
+            [history.team.id + '-lose']: `${history.team.name} to lose`
+          }
+          return {...all, [gameId]: {...all[gameId], options}}
+        }
+        game = {
+          options: {
+            [history.team.id + '-win']: `${history.team.name} to win`, 
+            [history.team.id + '-lose']: `${history.team.name} to lose` 
+          },
+          homeTeam: history.team.awayGames[0].homeTeam.name,
+          awayTeam: history.team.name,
+          date: history.team.awayGames[0].scheduledDate
+        }
+        return {...all, [gameId]: game}
+      } else {
+        return {...all}
+      }
+
+    }, {})
+    return allGames
+
+    // REDUCE to an ARRAY
+    /* let allGames = histories.reduce((all, history) => {
       let game = {}
       if (history.team.homeGames.length) {
         game = {
@@ -57,7 +111,9 @@ const Owner = {
       }
       return [...all, game]
     }, [])
-    return allGames
+    return allGames */
+    // REDUCE to an ARRAY ob
+
   },
 
   async createPreditions(ownerId, games) {

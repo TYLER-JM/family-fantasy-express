@@ -9,7 +9,6 @@ export default {
       res.redirect('/login')
     }
     Owner.upcomingGames(req.session.ownerId).then(games => {
-      console.log('games: ', games)
       templateVars.games = games
       return res.render('predictions-create', templateVars)
     }).catch(err => {
