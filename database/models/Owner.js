@@ -19,14 +19,14 @@ const Owner = {
                 scheduledDate: {gte: startOfDay, lte: endOfDay},
               },
               orderBy: {scheduledDate: 'asc'},
-              include: {awayTeam: true}
+              include: {awayTeam: true, predictions: {where: {ownerId: ownerId}}}
             },
             awayGames: {
               where: {
                 scheduledDate: {gte: startOfDay, lte: endOfDay}
               },
               orderBy: {scheduledDate: 'asc'},
-              include: {homeTeam: true}
+              include: {homeTeam: true, predictions: {where: {ownerId: ownerId}}}
             }
           }
         }
@@ -40,9 +40,13 @@ const Owner = {
 
     let allGames = histories.reduce((all, history) => {
       let game = {}
+      let startTime;
+      let now = new Date()
       if (history.team.homeGames.length) {
         let gameId = history.team.homeGames[0].id
-        if (all.hasOwnProperty(gameId)) {
+        let homeGame  = history.team.homeGames[0]
+        startTime = history.team.homeGames[0].scheduledDate
+        if ((all.hasOwnProperty(gameId) && startTime > now) && (!homeGame.predictions.length)) {
           let options = {
             ...all[gameId].options,
             [history.team.id + '-win']: `${history.team.name} to win`,
@@ -51,18 +55,23 @@ const Owner = {
           return {...all, [gameId]: {...all[gameId], options}}
         }
         game = {
-          options: {
-            [history.team.id + '-win']: `${history.team.name} to win`, 
-            [history.team.id + '-lose']: `${history.team.name} to lose` 
-          },
           homeTeam: history.team.name,
           awayTeam: history.team.homeGames[0].awayTeam.name,
           date: history.team.homeGames[0].scheduledDate
         }
+        if (startTime > now) {
+          game.options = {
+            [history.team.id + '-win']: `${history.team.name} to win`, 
+            [history.team.id + '-lose']: `${history.team.name} to lose` 
+          }
+        } 
+        game.prediction = homeGame.predictions.length
         return {...all, [gameId]: game}
       } else if (history.team.awayGames.length) {
         let gameId = history.team.awayGames[0].id
-        if (all.hasOwnProperty(gameId)) {
+        let awayGame = history.team.awayGames[0]
+        startTime = history.team.awayGames[0].scheduledDate
+        if ((all.hasOwnProperty(gameId) && startTime > now) && (!awayGame.predictions.length)) {
           let options = {
             ...all[gameId].options,
             [history.team.id + '-win']: `${history.team.name} to win`,
@@ -71,15 +80,19 @@ const Owner = {
           return {...all, [gameId]: {...all[gameId], options}}
         }
         game = {
-          options: {
-            [history.team.id + '-win']: `${history.team.name} to win`, 
-            [history.team.id + '-lose']: `${history.team.name} to lose` 
-          },
           homeTeam: history.team.awayGames[0].homeTeam.name,
           awayTeam: history.team.name,
           date: history.team.awayGames[0].scheduledDate
         }
+        if (startTime > now) {
+          game.options = {
+            [history.team.id + '-win']: `${history.team.name} to win`, 
+            [history.team.id + '-lose']: `${history.team.name} to lose` 
+          }
+        }
+        game.prediction = awayGame.predictions.length
         return {...all, [gameId]: game}
+
       } else {
         return {...all}
       }
