@@ -32,11 +32,6 @@ const Owner = {
         }
       }
     })
-    /**
-     * get Predictions,
-     * so we can indicate to the user that the game is still upcoming,
-     * but they've already placed a bet
-     */
 
     let allGames = histories.reduce((all, history) => {
       let game = {}
@@ -100,33 +95,6 @@ const Owner = {
     }, {})
     return allGames
 
-    // REDUCE to an ARRAY
-    /* let allGames = histories.reduce((all, history) => {
-      let game = {}
-      if (history.team.homeGames.length) {
-        game = {
-          homeTeam: history.team.homeGames[0].homeTeam,
-          ownedTeam: history.team.homeGames[0].homeTeam,
-          awayTeam: history.team.homeGames[0].awayTeam,
-          id: history.team.homeGames[0].id,
-          date: history.team.homeGames[0].scheduledDate
-        }
-      } else if (history.team.awayGames.length) {
-        game = {
-          homeTeam: history.team.awayGames[0].homeTeam,
-          ownedTeam: history.team.awayGames[0].awayTeam,
-          awayTeam: history.team.awayGames[0].awayTeam,
-          id: history.team.awayGames[0].id,
-          date: history.team.awayGames[0].scheduledDate
-        }
-      } else {
-        return [...all]
-      }
-      return [...all, game]
-    }, [])
-    return allGames */
-    // REDUCE to an ARRAY ob
-
   },
 
   async createPreditions(ownerId, games) {
@@ -146,8 +114,19 @@ const Owner = {
     } catch (error) {
       console.log('ERROR saving predictions: ', error)
     } 
+  },
+
+  async getPredictions(ownerId) {
+    let predictions = await prisma.prediction.findMany({where: {ownerId}})
+    return predictions.reduce((returnValue, prediction) => {
+      let correct = prediction.winPrediction === prediction.winOutcome
+      if (correct) {
+        return {total: ++returnValue.total, correct: ++returnValue.correct}
+      }
+      return {...returnValue, total: ++returnValue.total}
+    }, {correct: 0, total: 0})
   }
+
 }
 
-// Owner.upcomingGames(6)
 export default Owner
