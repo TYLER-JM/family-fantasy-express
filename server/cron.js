@@ -2,7 +2,7 @@ import https from 'https'
 import prisma from '../database/prismaClient.js'
 
 let today = new Date()
-today.setDate(today.getDate()-1) // get yesterday
+today.setDate(today.getDate()-1) // (-1) = yesterday
 let dateString = today.toLocaleDateString() // "3/23/2023" -- this format also works with the API
 const API_URL = `https://statsapi.web.nhl.com/api/v1/schedule?date=${dateString}&expand=schedule.linescore`
 const PLACEHOLDER = 'https://jsonplaceholder.typicode.com/users'
@@ -31,10 +31,23 @@ https.get(API_URL, res => {
           eventStateId: 3 // completed
         }
       }).then(result => {
+
+        let winningTeamId = result.awayTeamScore > result.homeTeamScore ? result.awayTeamId : result.homeTeamId 
+        prisma.prediction.findMany({
+          where: {eventId: result.id}
+        }).then(predictions => {
+
+          predictions.forEach(pred => {
+            prisma.prediction.update({
+              where: {id: pred.id},
+              data: {winOutcome: pred.teamId == winningTeamId} 
+            }).catch(error => console.log('error updating a prediction: ', error))
+          })
+
+        }).catch(error => console.log('error finding predictions: ', error))
         console.log(`updated Game ${result.id}: (${result.awayTeamId}) ${result.awayTeamScore} -- ${result.homeTeamScore} (${result.homeTeamId})`)
-      }).catch(error => {
-        console.log('there was an error updating an event: ', error)
-      })
+
+      }).catch(error => console.log('there was an error updating an event: ', error))
     }
   });
 }).on('error', err => {
