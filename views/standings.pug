@@ -1,4 +1,22 @@
 extends layout.pug 
 block content
   h2 Standings
-  p table will be coming soon
+  table
+    caption Fantasy League 
+    thead 
+      tr 
+        th Owner 
+        th Fantasy Points 
+        th Betting %
+        th Bets Won 
+        th Bets Lost 
+        th Total Bets
+    tbody 
+      each prediction in ownerPredictions
+        tr 
+          td=prediction.owner.name
+          td=prediction.getFantasyPoints()
+          td=prediction.getPercentage()
+          td=prediction.correct 
+          td=prediction.getIncorrect()
+          td=prediction.total

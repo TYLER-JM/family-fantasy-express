@@ -2,6 +2,10 @@ import prisma from '../prismaClient.js'
 
 
 const Owner = {
+  // async getAllOwners() {} // return a list of Ids
+
+  // async getOwnerPoints(ownerId) {} // return an object with wins, OT-losses
+
   async upcomingGames(ownerId) {
     //dynamically get start and ends of a date
     // I just accept a date as second parameter so dates further in the future can be got
@@ -38,6 +42,7 @@ const Owner = {
       let startTime;
       let now = new Date()
       if (history.team.homeGames.length) {
+
         let gameId = history.team.homeGames[0].id
         let homeGame  = history.team.homeGames[0]
         startTime = history.team.homeGames[0].scheduledDate
@@ -62,7 +67,9 @@ const Owner = {
         } 
         game.prediction = homeGame.predictions.length
         return {...all, [gameId]: game}
+
       } else if (history.team.awayGames.length) {
+
         let gameId = history.team.awayGames[0].id
         let awayGame = history.team.awayGames[0]
         startTime = history.team.awayGames[0].scheduledDate
@@ -89,7 +96,9 @@ const Owner = {
         return {...all, [gameId]: game}
 
       } else {
+
         return {...all}
+
       }
 
     }, {})
@@ -97,7 +106,7 @@ const Owner = {
 
   },
 
-  async createPreditions(ownerId, games) {
+  async createPredictions(ownerId, games) {
     let data = Object.entries(games).filter(([,value]) => value).map(([eventId, value]) => {
       let [teamId, outcome] = value.split('-')
         return {
