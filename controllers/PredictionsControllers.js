@@ -23,7 +23,7 @@ export default {
     if (!templateVars.username) {
       res.redirect('/login')
     }
-    Owner.createPreditions(req.session.ownerId, req.body).then(response => {
+    Owner.createPredictions(req.session.ownerId, req.body).then(response => {
       req.session.flash = `saved ${response.count} prediction(s)!`
       res.redirect('/')
     }).catch(error => {
