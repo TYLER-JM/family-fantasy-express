@@ -6,17 +6,21 @@ block content
     thead 
       tr 
         th Owner 
+        th Total
+        th NHL Points
         th Fantasy Points 
         th Betting %
         th Bets Won 
         th Bets Lost 
         th Total Bets
     tbody 
-      each prediction in ownerPredictions
+      each row in standings
         tr 
-          td=prediction.owner.name
-          td=prediction.getFantasyPoints()
-          td=prediction.getPercentage()
-          td=prediction.correct 
-          td=prediction.getIncorrect()
-          td=prediction.total
+          td=row.owner.name
+          td=(row.eventStats.getTotalNhlPoints() + row.predictions.getFantasyPoints())
+          td=row.eventStats.getTotalNhlPoints()
+          td=row.predictions.getFantasyPoints()
+          td=row.predictions.getPercentage()
+          td=row.predictions.correct 
+          td=row.predictions.getIncorrect()
+          td=row.predictions.total
