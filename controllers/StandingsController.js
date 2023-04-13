@@ -9,7 +9,7 @@ export default {
       res.redirect('/login')
     }
 
-    templateVars.ownerPredictions = await Standings.getOwnerPredictions()
+    templateVars.standings = await Standings.getStandings()
 
     res.render('standings', templateVars)
   },
