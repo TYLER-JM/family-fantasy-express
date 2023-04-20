@@ -27,7 +27,7 @@ https.get(API_URL, res => {
         data: {
           homeTeamScore: game.teams.home.score,
           awayTeamScore: game.teams.away.score,
-          overtime: game.linescore.currentPeriod === 4,
+          overtime: game.linescore.currentPeriod  > 3,
           eventStateId: 3 // completed
         }
       }).then(result => {
