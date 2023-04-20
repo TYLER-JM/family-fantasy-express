@@ -2,85 +2,99 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fieldReference"] // this is required in order to compare two columns in the same table
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma" // planetScale asks for this
 }
 
 model User {
-  id String @id @default(uuid())
+  id       String @id @default(uuid())
   username String @unique
   password String @db.VarChar(255)
-  owner Owner?
+  owner    Owner?
 }
 
 model Owner {
-  id         Int       @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  teamName String? @db.VarChar(255)
-  userId String @unique
-  user User @relation(fields: [userId], references: [id])
-  ownerTeamHistory OwnerTeamHistory[]   
-  predictions Prediction[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  teamName         String?            @db.VarChar(255)
+  userId           String             @unique
+  user             User               @relation(fields: [userId], references: [id])
+  ownerTeamHistory OwnerTeamHistory[]
+  predictions      Prediction[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([userId])
 }
 
 model Team {
-  id Int @id // team IDs must come from NHL API
-  name String @db.VarChar(255)
-  abbreviation String @db.VarChar(255)
-  homeGames Event[] @relation("homeGames")
-  awayGames Event[] @relation("awayGames")
+  id               Int                @id // team IDs must come from NHL API
+  name             String             @db.VarChar(255)
+  abbreviation     String             @db.VarChar(255)
+  homeGames        Event[]            @relation("homeGames")
+  awayGames        Event[]            @relation("awayGames")
   ownerTeamHistory OwnerTeamHistory[]
-  predictions Prediction[]
+  predictions      Prediction[]
 }
 
 model OwnerTeamHistory {
-  id Int @id @default(autoincrement())
-  owner Owner @relation(fields: [ownerId], references: [id])
-  ownerId Int
-  team Team @relation(fields: [teamId], references: [id])
-  teamId Int
-  startDate DateTime @default(now())
-  endDate DateTime?
-  accumulatedPoints Int? 
+  id                Int       @id @default(autoincrement())
+  owner             Owner     @relation(fields: [ownerId], references: [id])
+  ownerId           Int
+  team              Team      @relation(fields: [teamId], references: [id])
+  teamId            Int
+  startDate         DateTime  @default(now())
+  endDate           DateTime?
+  accumulatedPoints Int?
+
+  @@index([ownerId]) // required with 'prisma' relationMode
+  @@index([teamId])
 }
 
 model Event {
-  id Int @id // event Ids must come from NHL API: gamePK
-  season String @db.VarChar(255)
+  id            Int          @id // event Ids must come from NHL API: gamePK
+  season        String       @db.VarChar(255)
   scheduledDate DateTime
-  eventStateId Int
-  state EventState @relation(fields: [eventStateId], references: [id])
-  homeTeam Team @relation("homeGames", fields: [homeTeamId], references: [id])
-  homeTeamId Int
+  eventStateId  Int
+  state         EventState   @relation(fields: [eventStateId], references: [id])
+  homeTeam      Team         @relation("homeGames", fields: [homeTeamId], references: [id])
+  homeTeamId    Int
   homeTeamScore Int?
-  awayTeam Team @relation("awayGames", fields: [awayTeamId], references: [id])
-  awayTeamId Int
+  awayTeam      Team         @relation("awayGames", fields: [awayTeamId], references: [id])
+  awayTeamId    Int
   awayTeamScore Int?
-  overtime Boolean? @default(false)
-  predictions Prediction[]
+  overtime      Boolean?     @default(false)
+  predictions   Prediction[]
+
+  @@index([eventStateId])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
 }
 
 model EventState {
-  id Int @id
-  name String @db.VarChar(255)
+  id     Int     @id
+  name   String  @db.VarChar(255)
   events Event[]
 }
 
 model Prediction {
-  id Int @id @default(autoincrement())
-  ownerId Int
-  owner Owner @relation(fields: [ownerId], references: [id])
-  teamId Int
-  team Team @relation(fields: [teamId], references: [id])
-  eventId Int
-  event Event @relation(fields: [eventId], references: [id])
+  id            Int      @id @default(autoincrement())
+  ownerId       Int
+  owner         Owner    @relation(fields: [ownerId], references: [id])
+  teamId        Int
+  team          Team     @relation(fields: [teamId], references: [id])
+  eventId       Int
+  event         Event    @relation(fields: [eventId], references: [id])
   winPrediction Boolean
-  winOutcome Boolean?
+  winOutcome    Boolean?
+
+  @@index([ownerId])
+  @@index([eventId])
+  @@index([teamId])
 }
