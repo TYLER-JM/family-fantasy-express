@@ -20,6 +20,10 @@
 - local database is named `familyfantasy`
 - access it through SequelPro, or by command line: `$ mysql -uroot`
 
+### PlanetScale
+- `pscale connect family-fantasy main --port 3309` to proxy into the database (necessary for connecting to the remote PS db)
+
+
 ### Seeding
 - `node database/seeder.js`
 
