@@ -125,17 +125,6 @@ const Owner = {
     } 
   },
 
-  async getPredictions(ownerId) {
-    let predictions = await prisma.prediction.findMany({where: {ownerId}})
-    return predictions.reduce((returnValue, prediction) => {
-      let correct = prediction.winPrediction === prediction.winOutcome
-      if (correct) {
-        return {total: ++returnValue.total, correct: ++returnValue.correct}
-      }
-      return {...returnValue, total: ++returnValue.total}
-    }, {correct: 0, total: 0})
-  }
-
 }
 
 export default Owner
