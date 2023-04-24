@@ -6,11 +6,15 @@ const Owner = {
 
   // async getOwnerPoints(ownerId) {} // return an object with wins, OT-losses
 
-  async upcomingGames(ownerId) {
+  async upcomingGames(ownerId, addDays = 0) {
     //dynamically get start and ends of a date
     // I just accept a date as second parameter so dates further in the future can be got
-    let startOfDay = new Date()
-    startOfDay.setHours(0,0,0,0)
+
+    // for development, using April 11, 12, 13 for getting events
+    let startOfDay = new Date('2023-04-11T03:00:00.000Z')
+    // let startOfDay = new Date()
+    startOfDay.setDate(startOfDay.getDate() + addDays)
+    // startOfDay.setHours(0,0,0,0) // commented out for development
     let endOfDay = new Date(startOfDay.getTime())
     endOfDay.setHours(23,59,59,999)
     let histories = await prisma.ownerTeamHistory.findMany({

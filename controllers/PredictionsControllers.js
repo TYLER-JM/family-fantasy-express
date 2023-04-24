@@ -16,6 +16,7 @@ export default {
       return res.redirect('/')
     })
   },
+
   post(req, res) {
     let templateVars = {
       username: req.session.username,
@@ -30,6 +31,22 @@ export default {
       req.session.flash = `Error occurred, predictions not saved`
       console.log('ERROR DURING predictions: ', error)
       res.redirect('/')
+    })
+  },
+
+  load(req, res) {
+    let templateVars = {
+      username: req.session.username,
+    }
+    if (!templateVars.username) {
+      res.redirect('/login')
+    }
+    let addDays = req.body.addDays
+    Owner.upcomingGames(req.session.ownerId, addDays).then(games => {
+      return res.json(games)
+    }).catch(err => {
+      console.log('THERE WAS AN ERROR', err)
+      return res.redirect('/')
     })
   }
 }

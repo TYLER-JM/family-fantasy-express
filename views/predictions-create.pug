@@ -20,6 +20,8 @@ block content
                       option(value=`${id}`)=option
                 else 
                   span.tag.is-small game has already started
+          button#loadMore.is-full-width(type="button") Load More Games
           button.is-full-width(type="submit") Save Predictions!
   else 
     p.tag.is-center no upcoming games 
+  script(src="../assets/loadMore.js")
