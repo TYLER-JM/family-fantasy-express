@@ -22,10 +22,12 @@
 
 ### PlanetScale
 - `pscale connect family-fantasy main --port 3309` to proxy into the database (necessary for connecting to the remote PS db)
+- `pscale shell family-fantasy main` to open an interactive MySQL shell in the terminal
 
 
 ### Seeding
 - `node database/seeder.js`
 
-## Server
+## Development Start up
 - `$ node index.js` -- to start the server at localhost:3000
+- `pscale connect <DB> <branch>` -- to connect to PlanetScale DB (only required if developing by connecting to PlanetScale)
