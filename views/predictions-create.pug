@@ -7,19 +7,7 @@ block content
       div.is-horizontal-align 
         form(action=`/predictions/create`, method="post")
           each game, gameId in games
-            p
-              label(for=`${gameId}`)
-                =`${game.awayTeam} @ ${game.homeTeam} `
-                span.tag.is-small=game.date.toDateString()
-                if game.prediction
-                  span.tag.is-small You've already bet on this
-                else if game.options
-                  select(name=`${gameId}`)
-                    option(value="") no predictions 
-                    each option, id in game.options
-                      option(value=`${id}`)=option
-                else 
-                  span.tag.is-small game has already started
+            include partials/game.pug
           button#loadMore.is-full-width(type="button") Load More Games
           button.is-full-width(type="submit") Save Predictions!
   else 

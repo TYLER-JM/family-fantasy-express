@@ -32,7 +32,7 @@ app.get('/standings', StandingsController.get)
 
 app.get('/predictions/create', PredictionsController.get)
 app.post('/predictions/create', PredictionsController.post)
-app.get('/predictions/load', PredictionsController.load)
+app.get('/predictions/load/:addDays', PredictionsController.load)
 
 app.listen(PORT, () => {
   console.log(`app listening on port: ${PORT}`);

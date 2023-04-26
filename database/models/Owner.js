@@ -13,10 +13,11 @@ const Owner = {
     // for development, using April 11, 12, 13 for getting events
     let startOfDay = new Date('2023-04-11T03:00:00.000Z')
     // let startOfDay = new Date()
-    startOfDay.setDate(startOfDay.getDate() + addDays)
+    startOfDay.setDate(startOfDay.getDate() + Number(addDays))
     // startOfDay.setHours(0,0,0,0) // commented out for development
     let endOfDay = new Date(startOfDay.getTime())
     endOfDay.setHours(23,59,59,999)
+    console.log('TIMEFRAME: ', startOfDay, endOfDay)
     let histories = await prisma.ownerTeamHistory.findMany({
       where: {ownerId: ownerId, endDate: null},
       include: {
@@ -40,6 +41,7 @@ const Owner = {
         }
       }
     })
+    console.log('histories: ', histories)
 
     let allGames = histories.reduce((all, history) => {
       let game = {}

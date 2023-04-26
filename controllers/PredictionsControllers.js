@@ -34,16 +34,21 @@ export default {
     })
   },
 
-  load(req, res) {
+  load(req, res, app) {
     let templateVars = {
       username: req.session.username,
     }
     if (!templateVars.username) {
       res.redirect('/login')
     }
-    let addDays = req.body.addDays
+    let addDays = req.params.addDays
     Owner.upcomingGames(req.session.ownerId, addDays).then(games => {
-      return res.json(games)
+      let gameInputs = Object.entries(games).map(([gameId, game]) => {
+        templateVars = {game, gameId}
+        let guac = app.render('partials/game', templateVars)
+        return guac
+      })
+      return res.json(gameInputs)
     }).catch(err => {
       console.log('THERE WAS AN ERROR', err)
       return res.redirect('/')
