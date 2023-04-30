@@ -5,11 +5,12 @@ block content
     div
       h3.is-center Upcoming Games:
       div.is-horizontal-align 
-        form(action=`/predictions/create`, method="post")
+        form#predictionsForm(action=`/predictions/create`, method="post")
           each game, gameId in games
             include partials/game.pug
-          button#loadMore.is-full-width(type="button") Load More Games
-          button.is-full-width(type="submit") Save Predictions!
+          div.grouped.is-center
+            button#loadMore(type="button") Load More Games
+            button(type="submit") Save Predictions!
   else 
     p.tag.is-center no upcoming games 
-  script(src="../assets/loadMore.js")
+  script(src="../assets/loadMore.js") 

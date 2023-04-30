@@ -1,0 +1,14 @@
+extends layout.pug 
+block content 
+  h2.is-center 
+  table.striped 
+    caption Prediction History
+    thead 
+      tr
+        th Date 
+        th Prediction 
+        th Final Score 
+        th Result
+    tbody#predictionList 
+  button#showMore.pull-right Show more
+  script(src="../assets/loadMorePredictions.js") 
