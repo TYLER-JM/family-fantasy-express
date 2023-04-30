@@ -2,13 +2,8 @@ import prisma from '../prismaClient.js'
 
 
 const Owner = {
-  // async getAllOwners() {} // return a list of Ids
-
-  // async getOwnerPoints(ownerId) {} // return an object with wins, OT-losses
 
   async upcomingGames(ownerId, addDays = 0) {
-    //dynamically get start and ends of a date
-    // I just accept a date as second parameter so dates further in the future can be got
 
     // for development, using April 11, 12, 13 for getting events
     let startOfDay = new Date('2023-04-11T03:00:00.000Z')
@@ -41,7 +36,6 @@ const Owner = {
         }
       }
     })
-    console.log('histories: ', histories)
 
     let allGames = histories.reduce((all, history) => {
       let game = {}
@@ -52,7 +46,8 @@ const Owner = {
         let gameId = history.team.homeGames[0].id
         let homeGame  = history.team.homeGames[0]
         startTime = history.team.homeGames[0].scheduledDate
-        if ((all.hasOwnProperty(gameId) && startTime > now) && (!homeGame.predictions.length)) {
+        // if ((all.hasOwnProperty(gameId) && startTime > now) && (!homeGame.predictions.length)) {
+        if ((all.hasOwnProperty(gameId)) && (!homeGame.predictions.length)) {
           let options = {
             ...all[gameId].options,
             [history.team.id + '-win']: `${history.team.name} to win`,
@@ -63,9 +58,11 @@ const Owner = {
         game = {
           homeTeam: history.team.name,
           awayTeam: history.team.homeGames[0].awayTeam.name,
-          date: history.team.homeGames[0].scheduledDate
+          date: history.team.homeGames[0].scheduledDate,
+          id: gameId
         }
-        if (startTime > now) {
+        // if (startTime > now) {
+        if (true) {
           game.options = {
             [history.team.id + '-win']: `${history.team.name} to win`, 
             [history.team.id + '-lose']: `${history.team.name} to lose` 
@@ -79,7 +76,8 @@ const Owner = {
         let gameId = history.team.awayGames[0].id
         let awayGame = history.team.awayGames[0]
         startTime = history.team.awayGames[0].scheduledDate
-        if ((all.hasOwnProperty(gameId) && startTime > now) && (!awayGame.predictions.length)) {
+        // if ((all.hasOwnProperty(gameId) && startTime > now) && (!awayGame.predictions.length)) {
+        if ((all.hasOwnProperty(gameId)) && (!awayGame.predictions.length)) {
           let options = {
             ...all[gameId].options,
             [history.team.id + '-win']: `${history.team.name} to win`,
@@ -90,9 +88,11 @@ const Owner = {
         game = {
           homeTeam: history.team.awayGames[0].homeTeam.name,
           awayTeam: history.team.name,
-          date: history.team.awayGames[0].scheduledDate
+          date: history.team.awayGames[0].scheduledDate,
+          id: gameId
         }
-        if (startTime > now) {
+        // if (startTime > now) {
+        if (true) {
           game.options = {
             [history.team.id + '-win']: `${history.team.name} to win`, 
             [history.team.id + '-lose']: `${history.team.name} to lose` 
@@ -113,6 +113,7 @@ const Owner = {
   },
 
   async createPredictions(ownerId, games) {
+
     let data = Object.entries(games).filter(([,value]) => value).map(([eventId, value]) => {
       let [teamId, outcome] = value.split('-')
         return {
@@ -129,7 +130,59 @@ const Owner = {
     } catch (error) {
       console.log('ERROR saving predictions: ', error)
     } 
+
   },
+
+  async loadPredictions(ownerId, page) {
+
+    let predictions = await this.fetchPredictions(ownerId, page)
+    return this.mapPredictions(predictions)
+
+  },
+
+  async fetchPredictions(ownerId, page) {
+
+    const limit = 4
+    let predictions = await prisma.prediction.findMany({
+      skip: page * limit,
+      take: limit,
+      orderBy: {id: 'desc'},
+      where: {
+        ownerId: ownerId
+      },
+      include: {
+        event: {
+          select: {
+            homeTeam: true,
+            awayTeam: true,
+            scheduledDate: true,
+            homeTeamScore: true,
+            awayTeamScore: true
+          }
+        }
+      }
+    })
+    return predictions
+    
+  },
+
+  mapPredictions(predictions) {
+    const wrong = '&#x274C'
+    const right = '&#x2705'
+
+    return predictions.map(prediction => {
+      let teamName = (prediction.teamId === prediction.event.homeTeam.id) ?
+        prediction.event.homeTeam.abbreviation :
+        prediction.event.awayTeam.abbreviation
+      return {
+        date: prediction.event.scheduledDate.toDateString(),
+        prediction: `${teamName} to ${prediction.winPrediction ? 'win' : 'lose'}`,
+        finalScore: `${prediction.event.awayTeam.abbreviation}: ${prediction.event.awayTeamScore}\n${prediction.event.homeTeam.abbreviation}: ${prediction.event.homeTeamScore}`,
+        result: prediction.winPrediction === prediction.winOutcome ? right : wrong
+      }
+    })
+
+  }
 
 }
 

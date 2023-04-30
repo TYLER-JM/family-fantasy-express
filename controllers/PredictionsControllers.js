@@ -34,7 +34,7 @@ export default {
     })
   },
 
-  load(req, res, app) {
+  loadGames(req, res) {
     let templateVars = {
       username: req.session.username,
     }
@@ -42,15 +42,38 @@ export default {
       res.redirect('/login')
     }
     let addDays = req.params.addDays
-    Owner.upcomingGames(req.session.ownerId, addDays).then(games => {
-      let gameInputs = Object.entries(games).map(([gameId, game]) => {
-        templateVars = {game, gameId}
-        let guac = app.render('partials/game', templateVars)
-        return guac
+    setTimeout(() => {
+      Owner.upcomingGames(req.session.ownerId, addDays).then(games => {
+        return res.json(games)
+      }).catch(err => {
+        console.log('THERE WAS AN ERROR', err)
+        return res.redirect('/')
       })
-      return res.json(gameInputs)
-    }).catch(err => {
-      console.log('THERE WAS AN ERROR', err)
+    }, 3000);
+    
+  },
+
+  list(req, res) {
+    let templateVars = {
+      username: req.session.username,
+    }
+    if (!templateVars.username) {
+      res.redirect('/login')
+    }
+    res.render('predictions-list', templateVars)
+  },
+
+  loadPredictions(req, res) {
+    let templateVars = {
+      username: req.session.username,
+    }
+    if (!templateVars.username) {
+      res.redirect('/login')
+    }
+    Owner.loadPredictions(req.session.ownerId, req.params.page).then(predictions => {
+      return res.json(predictions)
+    }).catch(error => {
+      console.log('ERROR LOADING MORE PREDICTIONS: ', error)
       return res.redirect('/')
     })
   }
