@@ -167,8 +167,8 @@ const Owner = {
   },
 
   mapPredictions(predictions) {
-    const wrong = '&#x274C'
-    const right = '&#x2705'
+    const wrong = '❌' // '&#x274C'
+    const right = '✅' // '&#x2705'
 
     return predictions.map(prediction => {
       let teamName = (prediction.teamId === prediction.event.homeTeam.id) ?
