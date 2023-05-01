@@ -10,5 +10,7 @@ block content
         th Final Score 
         th Result
     tbody#predictionList 
-  button#showMore.pull-right Show more
+      each prediction in predictions
+        include partials/prediction.pug
+  button#showMore.pull-right(data-page=1) Show more
   script(src="../assets/loadMorePredictions.js") 
