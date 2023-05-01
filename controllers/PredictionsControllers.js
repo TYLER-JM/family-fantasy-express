@@ -53,13 +53,14 @@ export default {
     
   },
 
-  list(req, res) {
+  async list(req, res) {
     let templateVars = {
       username: req.session.username,
     }
     if (!templateVars.username) {
       res.redirect('/login')
     }
+    templateVars.predictions = await Owner.loadPredictions(req.session.ownerId, 0)
     res.render('predictions-list', templateVars)
   },
 

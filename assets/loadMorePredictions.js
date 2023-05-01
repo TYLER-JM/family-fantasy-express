@@ -1,12 +1,7 @@
-console.log('more predictions loader!')
-
 const showMoreButton = document.querySelector('#showMore')
 showMoreButton.addEventListener('click', showMore)
-showMoreButton.dataset.page = 0 //zero index because 'skip' uses page * 10 to determine how many items to skip
 
 function showMore(event) {
-  console.log('you want more rows')
-
   fetchGames(event)
 }
 
@@ -16,7 +11,6 @@ function fetchGames(event) {
   event.target.disabled = true
   fetch(`/predictions/load/${event.target.dataset.page}`).then(response => response.json()).then(response => {
     ++event.target.dataset.page
-    console.log('response', response)
     response.forEach(row => {
       tableBody.appendChild(newRow(row))  
     });
