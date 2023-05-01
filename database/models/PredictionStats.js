@@ -1,11 +1,10 @@
 class PredictionsStats {
   constructor({correct, total}) {
-      // this.owner = owner
       this.correct = correct
       this.total = total
     }
     getIncorrect = () => (this.total - this.correct)
-    getPercentage() {
+    getPercentage = () => {
       if (this.total > 0) {
         return (this.correct / this.total).toFixed(3)
       }
