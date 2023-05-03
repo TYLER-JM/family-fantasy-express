@@ -8,8 +8,6 @@ html(lang="en")
     link(rel="stylesheet", href="https://unpkg.com/chota@latest")
     link(rel="stylesheet", href="../styles/base.css")
   body.container 
-    h1 Welcome to the page
-      = username ? `, ${username}!` : '!'
     if username
       include  partials/navbar.pug
     block content

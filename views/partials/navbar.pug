@@ -1,14 +1,18 @@
-nav
-  ul 
-    li 
-      a(href="/standings") Standings
-    li 
-      a(href="/predictions/list") Prediction History
-    li 
-      a(href="/predictions/create") Upcoming Games (Make Predictions)
-    li
-      a(href="/") Home  
-    li
-      form(action="/logout", method="post") 
-        button(type="submit") Log out
+div.grouped
+  details.dropdown 
+    summary.button.outline MENU
+    nav.card
+      div 
+        a.tag.is-center(href="/standings") Standings
+      div  
+        a.tag.is-center(href="/predictions/list") Prediction History
+      div  
+        a.tag.is-center(href="/predictions/create") Upcoming Games (Make Predictions)
+      div  
+        a.tag.is-center(href="/") Home  
+  //- div
+  //-   =`signed in as ${username}`
+  div
+    form(action="/logout", method="post") 
+      button(type="submit") Log out
     
