@@ -12,7 +12,6 @@ const Owner = {
     // startOfDay.setHours(0,0,0,0) // commented out for development
     let endOfDay = new Date(startOfDay.getTime())
     endOfDay.setHours(23,59,59,999)
-    console.log('TIMEFRAME: ', startOfDay, endOfDay)
     let histories = await prisma.ownerTeamHistory.findMany({
       where: {ownerId: ownerId, endDate: null},
       include: {
