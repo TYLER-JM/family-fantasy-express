@@ -6,9 +6,9 @@ export default {
       flashMessage: req.session.flash,
     }
     if (!templateVars.username) {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
     req.session.flash = null
-    res.render('dashboard', templateVars)
+    return res.render('dashboard', templateVars)
   },
 }

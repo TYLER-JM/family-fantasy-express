@@ -7,6 +7,7 @@ export default {
     }
     if (!templateVars.username) {
       res.redirect('/login')
+      return
     }
     Owner.upcomingGames(req.session.ownerId).then(games => {
       templateVars.games = games
@@ -22,15 +23,15 @@ export default {
       username: req.session.username,
     }
     if (!templateVars.username) {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
     Owner.createPredictions(req.session.ownerId, req.body).then(response => {
       req.session.flash = `saved ${response.count} prediction(s)!`
-      res.redirect('/')
+      return res.redirect('/')
     }).catch(error => {
       req.session.flash = `Error occurred, predictions not saved`
       console.log('ERROR DURING predictions: ', error)
-      res.redirect('/')
+      return res.redirect('/')
     })
   },
 
@@ -39,7 +40,7 @@ export default {
       username: req.session.username,
     }
     if (!templateVars.username) {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
     let addDays = req.params.addDays
     setTimeout(() => {
@@ -58,10 +59,10 @@ export default {
       username: req.session.username,
     }
     if (!templateVars.username) {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
     templateVars.predictions = await Owner.loadPredictions(req.session.ownerId, 0)
-    res.render('predictions-list', templateVars)
+    return res.render('predictions-list', templateVars)
   },
 
   loadPredictions(req, res) {
@@ -69,7 +70,7 @@ export default {
       username: req.session.username,
     }
     if (!templateVars.username) {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
     Owner.loadPredictions(req.session.ownerId, req.params.page).then(predictions => {
       return res.json(predictions)

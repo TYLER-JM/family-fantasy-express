@@ -6,11 +6,11 @@ export default {
       username: req.session.username
     }
     if (!templateVars.username) {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
 
     templateVars.standings = await Standings.getStandings()
 
-    res.render('standings', templateVars)
+    return res.render('standings', templateVars)
   },
 }
