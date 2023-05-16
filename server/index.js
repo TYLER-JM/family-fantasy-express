@@ -9,7 +9,8 @@ import StandingsController from '../controllers/StandingsController.js'
 import PredictionsController from '../controllers/PredictionsControllers.js'
 import AuthController from '../controllers/AuthController.js'
 
-const PORT = 3000
+const PORT = process.env.PORT || '8080'
+const HOST = process.env.HOST || '0.0.0.0'
 const app = express()
 app.set('view engine', 'pug')
 app.use(express.static(path.resolve()))
@@ -36,6 +37,6 @@ app.post('/predictions/create', PredictionsController.post)
 app.get('/games/load/:addDays', PredictionsController.loadGames)
 app.get('/predictions/load/:page', PredictionsController.loadPredictions)
 
-app.listen(PORT, () => {
-  console.log(`app listening on port: ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`app listening on port: ${HOST}:${PORT}`);
 })
