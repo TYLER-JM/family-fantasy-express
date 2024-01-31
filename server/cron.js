@@ -4,9 +4,9 @@ import prisma from '../database/prismaClient.js'
 let today = new Date()
 today.setDate(today.getDate()-1) // (-1) = yesterday
 let dateString = today.toLocaleDateString() // "3/23/2023" -- this format also works with the API
-const API_URL = `https://statsapi.web.nhl.com/api/v1/schedule?date=${dateString}&expand=schedule.linescore`
 const PLACEHOLDER = 'https://jsonplaceholder.typicode.com/users'
 
+const API_URL = `https://api-web.nhle.com/v1/schedule/${dateString}`
 
 https.get(API_URL, res => {
   let data = [];
@@ -21,13 +21,15 @@ https.get(API_URL, res => {
   res.on('end', () => {
     console.log('Response ended: ');
     const response = JSON.parse(Buffer.concat(data).toString());
-    for(let game of response.dates[0].games) {
+
+    for(let game of response.gameWeek[0].games) {
+
       prisma.event.update({
-        where: {id: game.gamePk},
+        where: {id: game.id},
         data: {
-          homeTeamScore: game.teams.home.score,
-          awayTeamScore: game.teams.away.score,
-          overtime: game.linescore.currentPeriod  > 3,
+          homeTeamScore: game.homeTeam.score,
+          awayTeamScore: game.awayTeam.score,
+          overtime: game.periodDescriptor.number > 3,
           eventStateId: 3 // completed
         }
       }).then(result => {
@@ -48,6 +50,8 @@ https.get(API_URL, res => {
         console.log(`updated Game ${result.id}: (${result.awayTeamId}) ${result.awayTeamScore} -- ${result.homeTeamScore} (${result.homeTeamId})`)
 
       }).catch(error => console.log('there was an error updating an event: ', error))
+
+
     }
   });
 }).on('error', err => {
